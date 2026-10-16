@@ -30,21 +30,21 @@ scripts or deployment assumptions. Any future change requires a targeted transit
 ## GitHub audit and proposed metadata
 
 Current public repository: `Marilyn2004/leetcode-review-system`; default branch `main`.
-Observed description: “A Java application for tracking LeetCode progress and review schedules.”
-Observed topics: none. Desired repository: `Marilyn2004/algobloom`.
+The original tracker description and empty topics have been replaced with the AlgoBloom metadata
+below. Desired repository name remains `Marilyn2004/algobloom`.
 The public target URL returned 404; this is not proof that the name is available (it might be private,
-reserved or otherwise unavailable). No authenticated GitHub admin permission was established.
+reserved or otherwise unavailable). Authenticated GitHub API access confirms the account has repository admin permission.
 
-Proposed description:
+Current GitHub description:
 
 > AlgoBloom — Your Personal AI Coding Interview Coach. Persistent AI guidance, adaptive practice,
 > progressive hints, and a reflective learning loop with Spring Boot, React, and PostgreSQL.
 
-Proposed topics: `algobloom`, `ai-coach`, `coding-interview`, `interview-preparation`, `spring-boot`,
+Current GitHub topics: `algobloom`, `ai-coach`, `coding-interview`, `interview-preparation`, `spring-boot`,
 `java`, `react`, `typescript`, `postgresql`, `openai`, `spaced-repetition`.
 
-Description/topics and repository rename are pending user approval and authenticated GitHub access.
-No remote metadata was edited during the local rebrand.
+Description and topics were updated and verified through authenticated GitHub API requests.
+The repository name and local Git remote remain unchanged; no `algobloom` repository was created.
 
 ## Railway integration inspection and risks
 
@@ -53,12 +53,20 @@ backend service `leetcode-review-system` and `Postgres`. The backend repository 
 `main` on `Marilyn2004/leetcode-review-system`; `prDeploys=false`. Its datasource references point
 to production Postgres. No deployment or settings/database modification was performed.
 
-Before renaming, verify GitHub admin rights, target availability and connected GitHub Apps/webhooks
-with authenticated access. GitHub permissions, private integrations and organization-level automation
-cannot be inferred from public metadata. Do not assume redirects update Railway’s stored repository
-connection. A rename alone must not be treated as permission to reconnect/redeploy production.
+Admin rights are verified. An authenticated target lookup returned 404, so no accessible target-name
+conflict was found; reserved-name restrictions would still only be settled by GitHub’s rename operation.
+Repository webhooks are empty and GitHub Actions reports zero workflows. The OAuth credential cannot
+list GitHub App installations through the user-installations endpoint; Railway’s actual connection
+was therefore inspected directly through its authenticated API.
 
-After explicit approval, rename on GitHub, update only the local origin URL, verify access and
+**Rename paused for integration safety:** Railway still stores the old repository path in both the
+production service source and deployment trigger. No verified guarantee was found that a rename
+updates those settings automatically. Because production-setting edits are prohibited, the rename
+was not attempted. This is an unresolved integration dependency, not proof that a rename must fail.
+Obtain verified Railway support/documentation confirming rename handling, or separately authorize a
+controlled reconnection plan, before attempting it. GitHub redirects alone are insufficient.
+
+Once the integration dependency is resolved, rename on GitHub, update only the local origin URL, verify access and
 reinspect Railway’s stored source/trigger. Any required Railway reconnection is separate work needing
 a safe change window and authorization. Keep production on main and do not deploy this branch.
 
@@ -70,5 +78,7 @@ metadata, favicon link and sign-in branding. At 360 px, document width remained 
 horizontal overflow. The backend was not running during this frontend-only inspection, so its
 connection-error state was visible; no new end-to-end AI run or usable product screenshot is claimed.
 Diff/secret checks cover modified and untracked source/document assets; no production access occurred.
-Stop before commit, push, repository rename or production changes. Independent user teaching-quality
-acceptance and production hardening remain separate from branding verification.
+The user subsequently authorized branding commits and pushing only `codex/v2-core-mvp`. The initial
+branding commit is `0061b95`; this follow-up records verified remote metadata and the rename blocker.
+No merge/push to main, production deployment, database operation or Railway setting change occurred.
+Independent user teaching-quality acceptance and production hardening remain separate from branding verification.

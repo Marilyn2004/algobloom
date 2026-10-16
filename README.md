@@ -4,6 +4,9 @@
 
 *Practice smarter. Grow with every problem.*
 
+[AlgoBloom development branch](https://github.com/Marilyn2004/leetcode-review-system/tree/codex/v2-core-mvp)
+— the repository slug is retained while the Railway rename dependency is unresolved.
+
 AlgoBloom is an AI-powered personal coding interview coach that helps learners decide what to
 practice, reason through difficult problems, and use each attempt to shape the next session.
 A persistent Coach stays accessible across planning, Practice Workspaces, Learning Journals and
