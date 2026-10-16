@@ -2,6 +2,13 @@
 
 A Spring Boot REST backend for tracking LeetCode problems and scheduling spaced-repetition reviews. It persists problems and review history in PostgreSQL and exposes APIs for CRUD, due-review queues, filtering, and learning statistics.
 
+## Coach V2 local preview
+
+The V2 Coach is under local acceptance testing, with a React/TypeScript interface, authenticated
+learning sessions, persistent conversation, practice workspaces and Journals. It has **not** been
+deployed to the live V1 service. See [local setup and limitations](docs/CORE_MVP.md) and
+[AC01–AC27 evidence](docs/ACCEPTANCE_1_1.md).
+
 ## Live Deployment
 
 The API is deployed on [Railway](https://railway.app) at:

@@ -33,3 +33,12 @@ problems.csv
 target/
 
 .DS_Store
+
+# Local secrets
+.env
+.env.*
+!.env.example
+
+# Local acceptance script bytecode
+__pycache__/
+*.pyc

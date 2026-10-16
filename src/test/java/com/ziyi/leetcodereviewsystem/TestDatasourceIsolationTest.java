@@ -16,13 +16,17 @@ import static org.junit.jupiter.api.Assertions.*;
     "spring.datasource.hikari.jdbc-url=jdbc:postgresql://remote.invalid:5432/forbidden",
     "spring.datasource.hikari.username=forbidden",
     "spring.datasource.hikari.password=forbidden-test-placeholder",
-    "spring.jpa.hibernate.ddl-auto=create-drop"
+    "spring.jpa.hibernate.ddl-auto=validate",
+    "spring.flyway.url=jdbc:postgresql://remote.invalid:5432/forbidden",
+    "spring.flyway.user=forbidden",
+    "spring.flyway.password=forbidden-test-placeholder"
 })
 @Import(LocalTestDatabaseConfiguration.class)
 class TestDatasourceIsolationTest {
     @Autowired HikariDataSource dataSource;
     @Autowired Environment environment;
     @Autowired EntityManagerFactory entityManagerFactory;
+    @Autowired org.flywaydb.core.Flyway flyway;
 
     @Test void fullContextUsesDedicatedLocalDatabaseDespiteHostileProperties() throws Exception {
         assertEquals("jdbc:postgresql://remote.invalid:5432/forbidden",
@@ -31,6 +35,7 @@ class TestDatasourceIsolationTest {
         assertEquals("marilyn", dataSource.getUsername());
         assertEquals("", dataSource.getPassword());
         assertTrue(entityManagerFactory.isOpen());
+        assertSame(dataSource,flyway.getConfiguration().getDataSource());
         try (var connection = dataSource.getConnection()) {
             assertEquals(LocalTestDatabaseConfiguration.URL, connection.getMetaData().getURL());
             assertEquals("leetcode_review_test", connection.getCatalog());

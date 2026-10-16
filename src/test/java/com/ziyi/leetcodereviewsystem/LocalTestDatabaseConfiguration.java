@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 public class LocalTestDatabaseConfiguration {
     static final String URL = "jdbc:postgresql://127.0.0.1:5432/leetcode_review_test";
 
+    @org.springframework.boot.flyway.autoconfigure.FlywayDataSource
     @Bean(destroyMethod = "close")
     HikariDataSource dataSource() {
         // Not configuration-bound: external properties cannot redirect this pool.
