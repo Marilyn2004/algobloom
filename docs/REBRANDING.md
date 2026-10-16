@@ -32,8 +32,8 @@ scripts or deployment assumptions. Any future change requires a targeted transit
 The repository is now [Marilyn2004/algobloom](https://github.com/Marilyn2004/algobloom).
 Its numeric repository ID remains `1289247419`, preserving repository identity and Git history.
 Authenticated admin access was verified before renaming. The local origin uses the new URL.
-The default branch remains `main`; the current AlgoBloom README and MVP are on
-`codex/v2-core-mvp`. No merge or push to `main` was performed.
+The default branch is `main`, now containing the complete AlgoBloom MVP and README through
+a fast-forward merge from `codex/v2-core-mvp`. The development branch is retained.
 
 GitHub description:
 
@@ -50,7 +50,9 @@ The user explicitly authorized repairing repository connections without deployin
 Railway automatically updated both the backend source and existing deployment trigger to
 `Marilyn2004/algobloom`. No Railway mutation was needed. Project `kind-creativity` retains its
 single `production` environment, backend `leetcode-review-system`, and `Postgres` service.
-The trigger still watches `main`; `prDeploys=false`.
+Before promoting the MVP to `main`, the user authorized removal of the old GitHub deployment
+trigger. It was deleted through `deploymentTriggerDelete`; the environment now has zero
+GitHub deployment triggers and `prDeploys=false`. The service and database were not deleted.
 
 Before and after the rename, latest deployment IDs were unchanged:
 
@@ -60,12 +62,15 @@ Before and after the rename, latest deployment IDs were unchanged:
 Render service `algobloom-demo` was explicitly updated to the new repository URL and retained
 branch `codex/v2-core-mvp` with automatic deployments disabled. This was a connection update,
 not a deployment request. The public demo continues using its separate Neon database.
-No database operation, production deployment, merge, or push to `main` was performed.
+The subsequent promotion to `main` was authorized separately, after disabling the Railway
+trigger and passing all regression checks. No production database operation or deployment
+was performed.
 
 ## Validation
 
 The last application-code validation passed 137 backend tests and 12 frontend tests, TypeScript
 checks, and the production frontend build. Public deployment verification passed nine synthetic
 workflow checks with real AI responses; details are in [FREE_DEPLOYMENT.md](FREE_DEPLOYMENT.md).
-This repository-transition follow-up changes documentation and Git/deployment connection metadata
-only. Git diff and staged-secret checks are performed before committing it.
+Main-promotion verification reran all 137 backend tests, all 12 frontend tests, TypeScript checks,
+and the production build successfully. Tests used the dedicated local PostgreSQL test database.
+The promotion documentation changes no application code.

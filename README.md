@@ -6,7 +6,7 @@
 
 **Public demo:** https://algobloom-demo.onrender.com/coach — free hosting; idle cold starts apply.
 
-[AlgoBloom development branch](https://github.com/Marilyn2004/algobloom/tree/codex/v2-core-mvp)
+[AlgoBloom repository](https://github.com/Marilyn2004/algobloom)
 
 AlgoBloom is an AI-powered personal coding interview coach that helps learners decide what to
 practice, reason through difficult problems, and use each attempt to shape the next session.
@@ -180,9 +180,9 @@ See [deployment setup and verification](docs/FREE_DEPLOYMENT.md).
 The existing legacy V1 backend remains at [its Railway URL](https://leetcode-review-system-production.up.railway.app),
 using Railway-hosted PostgreSQL. That endpoint does not represent a hosted AlgoBloom frontend or AI Coach.
 
-Railway’s production connection watches `main` on `Marilyn2004/algobloom`;
-PR deployments remain disabled. Railway automatically synchronized the repository rename;
-the existing backend and PostgreSQL deployment IDs remained unchanged. Render uses the
+The old Railway backend’s GitHub auto-deployment trigger has been removed, so pushes to
+`main` do not deploy it. Its service and PostgreSQL database are retained; PR deployments
+remain disabled. The backend and PostgreSQL deployment IDs remained unchanged. Render uses the
 `codex/v2-core-mvp` branch with automatic deployments disabled. Do not point the local profile
 at Railway. [Rebranding notes](docs/REBRANDING.md) record compatibility identifiers and verification.
 
