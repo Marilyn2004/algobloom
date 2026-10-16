@@ -1,0 +1,13 @@
+.git
+.idea
+.DS_Store
+**/.DS_Store
+.env
+.env.*
+**/.env
+**/.env.*
+target
+frontend/node_modules
+frontend/dist
+scripts/__pycache__
+*.log

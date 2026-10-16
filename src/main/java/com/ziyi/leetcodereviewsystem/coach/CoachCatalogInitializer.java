@@ -36,7 +36,7 @@ public class CoachCatalogInitializer {
             db.update("insert into coach_catalog(id,context_version,teaching_context,provenance,position) values (?,'original-v1',?,?,?) on conflict(id) do nothing",id,e[6],"Official factual identifier/link: https://leetcode.com/problems/"+e[2]+"/; independently authored teaching context and ordering, project MIT license; no proprietary statements or solutions",position++);
         }
     }
-    @Configuration @Profile("coach") static class Startup {
+    @Configuration @Profile({"coach","staging"}) static class Startup {
         @Bean ApplicationRunner coachCatalogSeed(CoachCatalogInitializer catalog){return args->catalog.seed();}
     }
 }
