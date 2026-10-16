@@ -20,6 +20,8 @@ public class CoachStagingConfiguration {
         if (environment.matchesProfiles("coach")) throw new IllegalStateException("Local and staging profiles cannot be combined");
         var config=new HikariConfig();
         config.setJdbcUrl(environment.getRequiredProperty("ALGOBLOOM_STAGING_JDBC_URL"));
+        // Use the JRE CA trust store; verify-full still enforces certificate and hostname checks.
+        config.addDataSourceProperty("sslfactory","org.postgresql.ssl.DefaultJavaSSLFactory");
         config.setUsername(environment.getRequiredProperty("ALGOBLOOM_STAGING_DB_USER"));
         config.setPassword(environment.getRequiredProperty("ALGOBLOOM_STAGING_DB_PASSWORD"));
         config.setMaximumPoolSize(3);
