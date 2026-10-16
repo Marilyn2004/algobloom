@@ -21,64 +21,51 @@ No historical files, migrations, tests or licenses were deleted.
 - Existing API paths, profile `coach`, script names, `COACH_*` variables and browser storage keys.
 - Official LeetCode names/links and upstream copyright attribution: these identify external content,
   not AlgoBloom’s product identity. Approved specs retain their original wording.
-- Local folder and current Git remote remain `leetcode-review-system` until a separately approved
-  transition. The existing Railway URL/service/project are intentionally unchanged.
+- Local folder remains `leetcode-review-system`; origin now uses `https://github.com/Marilyn2004/algobloom.git`.
+  The existing Railway URL/service/project are intentionally unchanged.
 
 Renaming these is unnecessary for product branding and could break compatibility, persistence,
 scripts or deployment assumptions. Any future change requires a targeted transition plan.
 
-## GitHub audit and proposed metadata
+## Completed GitHub transition
 
-Current public repository: `Marilyn2004/leetcode-review-system`; default branch `main`.
-The original tracker description and empty topics have been replaced with the AlgoBloom metadata
-below. Desired repository name remains `Marilyn2004/algobloom`.
-The public target URL returned 404; this is not proof that the name is available (it might be private,
-reserved or otherwise unavailable). Authenticated GitHub API access confirms the account has repository admin permission.
+The repository is now [Marilyn2004/algobloom](https://github.com/Marilyn2004/algobloom).
+Its numeric repository ID remains `1289247419`, preserving repository identity and Git history.
+Authenticated admin access was verified before renaming. The local origin uses the new URL.
+The default branch remains `main`; the current AlgoBloom README and MVP are on
+`codex/v2-core-mvp`. No merge or push to `main` was performed.
 
-Current GitHub description:
+GitHub description:
 
 > AlgoBloom — Your Personal AI Coding Interview Coach. Persistent AI guidance, adaptive practice,
 > progressive hints, and a reflective learning loop with Spring Boot, React, and PostgreSQL.
 
-Current GitHub topics: `algobloom`, `ai-coach`, `coding-interview`, `interview-preparation`, `spring-boot`,
+Topics: `algobloom`, `ai-coach`, `coding-interview`, `interview-preparation`, `spring-boot`,
 `java`, `react`, `typescript`, `postgresql`, `openai`, `spaced-repetition`.
+Homepage: https://algobloom-demo.onrender.com/coach
 
-Description and topics were updated and verified through authenticated GitHub API requests.
-The repository name and local Git remote remain unchanged; no `algobloom` repository was created.
+## Deployment integration verification
 
-## Railway integration inspection and risks
+The user explicitly authorized repairing repository connections without deploying or touching databases.
+Railway automatically updated both the backend source and existing deployment trigger to
+`Marilyn2004/algobloom`. No Railway mutation was needed. Project `kind-creativity` retains its
+single `production` environment, backend `leetcode-review-system`, and `Postgres` service.
+The trigger still watches `main`; `prDeploys=false`.
 
-Read-only authenticated inspection found project `kind-creativity`, one `production` environment,
-backend service `leetcode-review-system` and `Postgres`. The backend repository trigger watches
-`main` on `Marilyn2004/leetcode-review-system`; `prDeploys=false`. Its datasource references point
-to production Postgres. No deployment or settings/database modification was performed.
+Before and after the rename, latest deployment IDs were unchanged:
 
-Admin rights are verified. An authenticated target lookup returned 404, so no accessible target-name
-conflict was found; reserved-name restrictions would still only be settled by GitHub’s rename operation.
-Repository webhooks are empty and GitHub Actions reports zero workflows. The OAuth credential cannot
-list GitHub App installations through the user-installations endpoint; Railway’s actual connection
-was therefore inspected directly through its authenticated API.
+- Backend: `d6bd0423-0dc6-488c-b028-113992f6febc` (`SUCCESS`).
+- PostgreSQL: `48f05b4a-f0e8-423f-b5c5-169326c7cc59` (`SUCCESS`).
 
-**Rename paused for integration safety:** Railway still stores the old repository path in both the
-production service source and deployment trigger. No verified guarantee was found that a rename
-updates those settings automatically. Because production-setting edits are prohibited, the rename
-was not attempted. This is an unresolved integration dependency, not proof that a rename must fail.
-Obtain verified Railway support/documentation confirming rename handling, or separately authorize a
-controlled reconnection plan, before attempting it. GitHub redirects alone are insufficient.
+Render service `algobloom-demo` was explicitly updated to the new repository URL and retained
+branch `codex/v2-core-mvp` with automatic deployments disabled. This was a connection update,
+not a deployment request. The public demo continues using its separate Neon database.
+No database operation, production deployment, merge, or push to `main` was performed.
 
-Once the integration dependency is resolved, rename on GitHub, update only the local origin URL, verify access and
-reinspect Railway’s stored source/trigger. Any required Railway reconnection is separate work needing
-a safe change window and authorization. Keep production on main and do not deploy this branch.
+## Validation
 
-## Validation and next gate
-
-Validation on October 15, 2026: backend 133 tests passed (zero failures/errors/skips); frontend
-12 tests passed; TypeScript checks and production build passed. The browser confirmed the title,
-metadata, favicon link and sign-in branding. At 360 px, document width remained 360 px without
-horizontal overflow. The backend was not running during this frontend-only inspection, so its
-connection-error state was visible; no new end-to-end AI run or usable product screenshot is claimed.
-Diff/secret checks cover modified and untracked source/document assets; no production access occurred.
-The user subsequently authorized branding commits and pushing only `codex/v2-core-mvp`. The initial
-branding commit is `0061b95`; this follow-up records verified remote metadata and the rename blocker.
-No merge/push to main, production deployment, database operation or Railway setting change occurred.
-Independent user teaching-quality acceptance and production hardening remain separate from branding verification.
+The last application-code validation passed 137 backend tests and 12 frontend tests, TypeScript
+checks, and the production frontend build. Public deployment verification passed nine synthetic
+workflow checks with real AI responses; details are in [FREE_DEPLOYMENT.md](FREE_DEPLOYMENT.md).
+This repository-transition follow-up changes documentation and Git/deployment connection metadata
+only. Git diff and staged-secret checks are performed before committing it.

@@ -6,8 +6,7 @@
 
 **Public demo:** https://algobloom-demo.onrender.com/coach — free hosting; idle cold starts apply.
 
-[AlgoBloom development branch](https://github.com/Marilyn2004/leetcode-review-system/tree/codex/v2-core-mvp)
-— the repository slug is retained while the Railway rename dependency is unresolved.
+[AlgoBloom development branch](https://github.com/Marilyn2004/algobloom/tree/codex/v2-core-mvp)
 
 AlgoBloom is an AI-powered personal coding interview coach that helps learners decide what to
 practice, reason through difficult problems, and use each attempt to shape the next session.
@@ -181,17 +180,17 @@ See [deployment setup and verification](docs/FREE_DEPLOYMENT.md).
 The existing legacy V1 backend remains at [its Railway URL](https://leetcode-review-system-production.up.railway.app),
 using Railway-hosted PostgreSQL. That endpoint does not represent a hosted AlgoBloom frontend or AI Coach.
 
-Railway’s production connection currently watches `main` on `Marilyn2004/leetcode-review-system`;
-PR deployments were disabled when inspected. A GitHub repository rename remains paused pending verification that the existing Railway
-connection would survive without an unauthorized production change. Do not point the local profile at Railway or
-assume GitHub redirects preserve deployment integrations. [Rebranding notes](docs/REBRANDING.md)
-record the retained identifiers and pending remote work.
+Railway’s production connection watches `main` on `Marilyn2004/algobloom`;
+PR deployments remain disabled. Railway automatically synchronized the repository rename;
+the existing backend and PostgreSQL deployment IDs remained unchanged. Render uses the
+`codex/v2-core-mvp` branch with automatic deployments disabled. Do not point the local profile
+at Railway. [Rebranding notes](docs/REBRANDING.md) record compatibility identifiers and verification.
 
 ## Project evolution and compatibility
 
 The project began as a Java CLI with CSV persistence, evolved into a Spring Boot/PostgreSQL review
 backend, and added a canonical catalog before the persistent AI coaching MVP. AlgoBloom is the
-current product identity; the old repository, Java package, database and migration identifiers are
+current product identity; the legacy Java package, database and migration identifiers are
 retained deliberately. Legacy private CRUD/statistics endpoints are denied by default in the new
 app and available through an explicit local compatibility flag. Their implementation and tests remain.
 
