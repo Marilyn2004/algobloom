@@ -145,3 +145,18 @@ are opt-in and incur API usage; repeat them deliberately, not on every unit-test
 Later remains automatic reports/reminders, mock interviews, guaranteed company questions, LeetCode
 sync, code execution, voice, payments/social, deployment and production hardening. These have not
 been represented as implemented features.
+
+## Public free demo verification — October 15, 2026
+
+The original local evidence above is retained. A separate Free Render/Neon demo is now accessible
+at https://algobloom-demo.onrender.com/coach. It does not replace the existing Railway production
+service or use its database. See [FREE_DEPLOYMENT.md](FREE_DEPLOYMENT.md) for resource/commit details.
+
+The deployment branch passed 137 backend tests, 12 frontend tests and TypeScript/build. Public
+health, SPA routes, registration/login, real planning, idempotent confirmation, Workspace tutoring,
+concept-level invariants, shared feedback/Journal, Growth and logout/login persistence were verified
+using new synthetic accounts. A public browser also verified a real SSE Coach reply and a 360 px
+Dashboard without horizontal overflow. The repeatable public smoke script targets only that exact
+demo URL and keeps synthetic transcripts under ignored target/. A rule fallback from before the
+secret reload was rejected, not reported as real AI success. This remains a sampled demo acceptance,
+not production/security/teaching-quality certification.

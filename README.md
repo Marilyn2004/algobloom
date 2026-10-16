@@ -4,6 +4,8 @@
 
 *Practice smarter. Grow with every problem.*
 
+**Public demo:** https://algobloom-demo.onrender.com/coach — free hosting; idle cold starts apply.
+
 [AlgoBloom development branch](https://github.com/Marilyn2004/leetcode-review-system/tree/codex/v2-core-mvp)
 — the repository slug is retained while the Railway rename dependency is unresolved.
 
@@ -160,7 +162,7 @@ pnpm test
 pnpm build
 ```
 
-`pnpm build` runs TypeScript checks before bundling. The verified MVP baseline has **133 backend
+`pnpm build` runs TypeScript checks before bundling. The verified deployment branch has **137 backend
 tests** and **12 frontend tests**. Coverage includes ownership, planning/confirmation races,
 transaction rollback, shared feedback, migration compatibility, hint policy, provider contracts,
 stream recovery and existing V1 regressions. Full Spring contexts use the dedicated local test pool.
@@ -171,13 +173,17 @@ accessibility or teaching-quality certification. No fabricated screenshots or me
 
 ## Deployment status
 
-**AlgoBloom’s current Coach MVP runs locally and has not been deployed.** The existing legacy V1
-backend remains at [its Railway URL](https://leetcode-review-system-production.up.railway.app),
+**AlgoBloom has a separate public demo on Render Free with a new Neon Free PostgreSQL database.**
+The React interface and Spring Boot API share one HTTPS origin. Free instances can sleep; this is a
+portfolio demo rather than an always-on production service. OpenAI usage consumes provider credit.
+See [deployment setup and verification](docs/FREE_DEPLOYMENT.md).
+
+The existing legacy V1 backend remains at [its Railway URL](https://leetcode-review-system-production.up.railway.app),
 using Railway-hosted PostgreSQL. That endpoint does not represent a hosted AlgoBloom frontend or AI Coach.
 
 Railway’s production connection currently watches `main` on `Marilyn2004/leetcode-review-system`;
-PR deployments were disabled when inspected. A GitHub repository rename requires explicit permission,
-integration verification and a separate deployment plan. Do not point the local profile at Railway or
+PR deployments were disabled when inspected. A GitHub repository rename remains paused pending verification that the existing Railway
+connection would survive without an unauthorized production change. Do not point the local profile at Railway or
 assume GitHub redirects preserve deployment integrations. [Rebranding notes](docs/REBRANDING.md)
 record the retained identifiers and pending remote work.
 
@@ -195,7 +201,7 @@ Approved historical specs and attribution are preserved in [V2_SPEC.md](V2_SPEC.
 ## Roadmap
 
 - User review of tutoring quality and the full coaching experience.
-- Production migration rehearsal, deployment configuration, monitoring and backup/recovery.
+- Production migration rehearsal, monitoring and backup/recovery beyond the separate free demo.
 - Later: automatic learning reports, mock interviews and optional account synchronization.
 
 These are planned work, not claims about currently deployed capabilities.

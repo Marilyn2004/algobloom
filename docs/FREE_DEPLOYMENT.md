@@ -44,5 +44,34 @@ Journal persistence and Growth; real AI smoke only after configuring the provide
 cold-start/restart behavior and limitations honestly. A config file or successful build is not proof
 of a live deployment. Do not label the launch complete until the actual public URL passes these checks.
 
-Current status: local preparation only; Render and Neon authentication/provisioning and a real
-public endpoint remain pending. No new hosting resources have been created.
+## Live resources and current verification
+
+- Render workspace: AlgoBloom; service `algobloom-demo` (`srv-db8nhojl550s73ehgvt0`), plan `free`,
+  region Oregon, branch `codex/v2-core-mvp`, automatic deploys disabled.
+- Neon project: `algobloom-demo` (`spring-salad-62135871`), verified Free organization, PostgreSQL 17,
+  region aws-us-west-2, minimal compute. It contains no copied production records.
+- Public frontend/API origin: https://algobloom-demo.onrender.com
+- Database-backed health: https://algobloom-demo.onrender.com/health — HTTP 200.
+- `/coach`, `/journal`, `/growth` and favicon return HTTP 200; anonymous bootstrap returns 401.
+- Flyway V1–V5 applied successfully to the newly created empty database. TLS uses Java’s default CA
+  trust store with `verify-full`, retaining certificate and hostname verification.
+- Local regression: 137 backend tests and 12 frontend tests passed; TypeScript/build passed. The
+  Linux Docker image built successfully; cloud startup exposed and resolved endpoint-label/TLS
+  configuration differences before health verification.
+- Public real-AI smoke passed nine checks on October 15, 2026: HTTPS registration/login, real AI
+  draft generation without a Journal, idempotent confirmation, canonical Workspace links, real L1
+  tutoring without completion, concept discussion without hint escalation, shared feedback/Growth,
+  conversation/Journal recovery after logout/login, and another plan without another Journal.
+- The public browser also showed the thinking state and a real streamed stack/queue explanation;
+  authenticated Dashboard layout had no horizontal overflow at 360 px. Original synthetic messages
+  were inspected for meaning; this is sampled verification, not independent AI-quality certification.
+- Run `python3 scripts/coach_public_smoke.py --real` for the bounded fixed-demo-only smoke; it incurs
+  provider usage and retains a synthetic report under ignored `target/`. It never reads an API key.
+- Initial provider checks correctly rejected a rule/application fallback before the saved secret
+  was loaded. The new demo was reloaded and only genuine provider replies counted as a pass.
+- Deployed application commit: `bfaca3932e6650d64580f520e0dc10ad0b39c202`. Subsequent documentation
+  and smoke-script commits do not change the deployed application. Auto-deploy remains disabled.
+- The demo has a 10-message/user/day setting. This is an application quota, not a provider-wide
+  monetary limit. Monitor provider usage; do not enable automatic credit replenishment for a demo.
+
+No paid plan, payment method, production database operation or Railway setting change was introduced.

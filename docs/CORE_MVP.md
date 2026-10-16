@@ -1,7 +1,9 @@
 # AlgoBloom — local development and verification
 
-Status: runnable local core MVP with real-provider vertical and three-problem smoke evidence.
-Independent user product/AI-quality sign-off remains; production deployment is not included.
+Status: runnable core MVP with local real-provider evidence and a separate public free demo at
+https://algobloom-demo.onrender.com/coach. See [free deployment](FREE_DEPLOYMENT.md) for current
+cloud verification and cold-start limits. Independent user product/AI-quality sign-off remains;
+the existing Railway production deployment is not replaced.
 See [AC01–AC27 evidence](ACCEPTANCE_1_1.md). Product Spec 1.1 in
 [PRODUCT_SPEC_1_1.md](PRODUCT_SPEC_1_1.md) supersedes the older milestone-only scope in `V2_SPEC.md`.
 The user explicitly approved implementation; the copied source document retains its original header.
