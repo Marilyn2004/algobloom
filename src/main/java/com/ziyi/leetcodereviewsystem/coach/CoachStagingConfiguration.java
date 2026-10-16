@@ -28,7 +28,7 @@ public class CoachStagingConfiguration {
     }
     static void validateTarget(String render,String actualId,String expectedId,String host,String jdbc) {
         if (!"true".equals(render) || !actualId.startsWith("srv-") || !actualId.equals(expectedId)
-                || !host.matches("ep-[a-z0-9-]+[.][a-z0-9-]+[.](aws|azure)[.]neon[.]tech")
+                || !host.matches("ep-[a-z0-9-]+(?:[.]c-[0-9]+)?[.][a-z0-9-]+[.](aws|azure)[.]neon[.]tech")
                 || !jdbc.equals("jdbc:postgresql://"+host+":5432/neondb?sslmode=verify-full")) {
             throw new IllegalStateException("Refusing a datasource outside the pinned Render/Neon staging target");
         }
