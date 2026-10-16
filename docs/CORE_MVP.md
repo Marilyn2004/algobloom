@@ -1,4 +1,4 @@
-# Coach core — local development and verification
+# AlgoBloom — local development and verification
 
 Status: runnable local core MVP with real-provider vertical and three-problem smoke evidence.
 Independent user product/AI-quality sign-off remains; production deployment is not included.

@@ -7,3 +7,6 @@
 .node-main{position:relative}.node-main::after{content:attr(data-time);display:none;position:absolute;left:0;top:100%;z-index:5;max-width:100%;background:#293d32;color:#fffdf8;padding:12px;border-radius:8px;font-size:12px;white-space:normal}.node-main:hover::after,.node-main:focus-visible::after{display:block}
 
 footer{color:#5d6b55}.context button{min-height:44px;padding:8px}.check{min-height:44px}
+
+/* Keep the full product tagline legible within the existing header. */
+.brand small{letter-spacing:.02em;margin-top:0;max-width:235px;white-space:normal;line-height:1.4}@media(max-width:760px){.brand small{max-width:150px;font-size:8px;letter-spacing:0}.auth h1{font-size:28px}}

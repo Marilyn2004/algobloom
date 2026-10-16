@@ -1,6 +1,8 @@
-# Milestone 1 catalog
+# AlgoBloom — catalog provenance and compatibility
 
-This branch adds a local/test catalog foundation. It has not been deployed to Railway.
+This document preserves the M1 metadata attribution and API contract. AlgoBloom’s Coach uses an
+independently authored nine-problem teaching path from `CoachCatalogInitializer`, rather than
+copying the upstream ordering. See [current setup](CORE_MVP.md).
 
 ## Source and permission basis
 
@@ -49,56 +51,22 @@ Problem responses contain `id`, `platform`, `externalProblemId`, `title`, `slug`
 IDs are database-assigned, not LeetCode IDs. Identified catalog records have all four new identity/link
 fields populated. Legacy unidentified rows remain nullable and are excluded from catalog reads.
 
-## Local loading
+## Current local setup and compatibility
 
-Loading is disabled by default. Enable both the `local` profile and `catalog.seed.enabled=true`.
-The startup runner refuses non-loopback datasource URLs. Use an explicit local datasource:
+Use the dedicated local development/test databases and startup instructions in [CORE_MVP.md](CORE_MVP.md).
+Hibernate now uses `validate`; additive Flyway migrations V1–V5 are enabled for local/test use.
+The former M1 `ddl-auto=update` / test `create-drop` instructions no longer apply.
 
-```bash
-SPRING_DATASOURCE_URL=jdbc:postgresql://127.0.0.1:5432/leetcode_review \
-./mvnw spring-boot:run -Dspring-boot.run.arguments='--spring.profiles.active=local --catalog.seed.enabled=true'
-```
+The M1 loader remains opt-in (`local` profile plus `catalog.seed.enabled=true`) and disabled by
+default. It is separate from the `coach` profile’s teaching-path initializer. Do not use the M1
+startup command as the current application setup. Loading requires an already prepared compatible
+local schema; its loopback check runs after persistence startup, not as a pre-Hibernate guard.
 
-Configure your local database username/password through the existing datasource environment variables.
-The loader runs transactionally, reuses external identities and pattern slugs, and adds missing
-associations. Repeated loading produces no duplicates. Existing notes, solved state, review counters,
-dates and legacy pattern text are preserved. Metadata, slug identity, or pattern-name conflicts fail
-loading and roll back the batch rather than silently overwriting records. Database uniqueness provides
-an additional constraint; concurrent duplicate loads may fail rather than retry.
+The legacy singular `Problem.pattern` remains separate from canonical `Problem.patterns`.
+Legacy POST ignores supplied IDs, and PUT preserves catalog identities/associations while retaining
+its existing title/difficulty update semantics. V1 scheduling and history remain implemented.
+Legacy private `/problems` and `/stats` access is denied by default; the explicit local compatibility
+flag and regression tests are documented in the current guide. Catalog responses expose metadata only.
 
-## Compatibility and schema
-
-Hibernate `ddl-auto=update` remains unchanged for normal local development. It adds nullable catalog
-columns, `patterns`, and `problem_patterns`. Unique constraints cover platform/external ID,
-platform/problem slug, pattern slug, and problem/pattern pairs. Legacy pattern strings are not backfilled.
-There is no migration script or production backfill.
-
-V1 endpoints and JSON stay unchanged. POST constructs a fresh legacy entity and ignores supplied
-IDs, preventing merge into existing catalog records. V1 PUT retains catalog identities and associations but still
-updates shared title/difficulty and legacy state. Catalog records therefore remain editable through V1
-for compatibility; immutable catalog administration is deferred. Review sessions and scheduling remain
-V1 behavior. Loading records increases V1 total/difficulty/legacy-pattern counts; untouched seeds add
-no solved, reviewed, or due counts.
-
-Do not deploy this milestone or point this branch at Railway: Hibernate may change schema at startup
-regardless of whether loading is enabled. A controlled production rollout with a proper migration
-strategy (for example Flyway or Liquibase) is future production-hardening work.
-
-## Tests
-
-Create a dedicated disposable local PostgreSQL database, owned by your local development user:
-
-```bash
-createdb -h 127.0.0.1 -p 5432 leetcode_review_test
-./mvnw test
-```
-
-`LocalTestDatabaseConfiguration` constructs the datasource at localhost port 5432, database
-`leetcode_review_test`, with the existing local username and an empty password. Every full Spring
-test context imports it. It is not configuration-bound: external environment variables, system
-properties and Spring application JSON cannot redirect the pool. Boot datasource auto-configuration
-backs off before Hibernate starts. The test properties file supplies defaults, not the safety boundary.
-Adjust the test-only configuration if local credentials differ. The suite uses `create-drop`; never
-use a database containing valuable data. Tests cover real PostgreSQL constraints,
-relationships, catalog queries/API shapes, loader idempotency/conflicts and V1 regressions. No additional
-dependencies, Docker, or remote services are required.
+Keep `problems.tsv`, `NEETCODE_LICENSE.txt`, the migrations and existing tests for provenance,
+compatibility and reproducibility. Do not run loaders, schema changes or tests against production.

@@ -1,319 +1,198 @@
-# LeetCode Review System
+# AlgoBloom
 
-A Spring Boot REST backend for tracking LeetCode problems and scheduling spaced-repetition reviews. It persists problems and review history in PostgreSQL and exposes APIs for CRUD, due-review queues, filtering, and learning statistics.
+**Your Personal AI Coding Interview Coach**
 
-## Coach V2 local preview
+*Practice smarter. Grow with every problem.*
 
-The V2 Coach is under local acceptance testing, with a React/TypeScript interface, authenticated
-learning sessions, persistent conversation, practice workspaces and Journals. It has **not** been
-deployed to the live V1 service. See [local setup and limitations](docs/CORE_MVP.md) and
-[AC01–AC27 evidence](docs/ACCEPTANCE_1_1.md).
+AlgoBloom is an AI-powered personal coding interview coach that helps learners decide what to
+practice, reason through difficult problems, and use each attempt to shape the next session.
+A persistent Coach stays accessible across planning, Practice Workspaces, Learning Journals and
+the Growth Timeline, with PostgreSQL-backed history as the source of truth.
 
-## Live Deployment
+## The coaching loop
 
-The API is deployed on [Railway](https://railway.app) at:
+1. Tell the Coach your goals, available time, or where you are stuck.
+2. Review and adjust a plan draft grounded in a curated problem catalog and your learning history.
+3. Explicitly confirm the current draft to create one learning session and its Journal.
+4. Open a Practice Workspace, follow the official problem link, and return to the same Coach.
+5. Ask for a small hint, discuss a concept or complexity, or voluntarily paste code for debugging.
+6. Record your outcome, time and reflections. Future review and planning use the corrected evidence.
 
-**https://leetcode-review-system-production.up.railway.app**
+### Persistent AI Coach
 
-Production uses a Railway-hosted PostgreSQL instance. Example:
+Conversations persist across visits; the application shell preserves conversation and unsent input
+across pages. Server-resolved context connects each request to its original problem and attempt,
+so a late response remains associated with the problem that prompted it. Interrupted requests can
+be recovered by request ID rather than blindly generating another response.
 
-```bash
-curl -s https://leetcode-review-system-production.up.railway.app/problems
-```
+The Java provider adapter calls OpenAI’s Responses API. Strict, server-validated tools search the
+catalog, retrieve owned learning context and propose plans. The model cannot confirm a plan,
+write outcomes, execute code, issue SQL, or browse arbitrary URLs. Plan confirmation is an explicit,
+revision-checked, idempotent transaction.
 
-## Features
+### Practice Workspace and progressive hints
 
-- Problem CRUD over HTTP
-- Persistent storage in PostgreSQL via Spring Data JPA / Hibernate
-- Spaced-repetition scheduling on each completed review
-- Due-review queue (`nextReviewDate <= today`), ordered most overdue first
-- Optional filtering by `difficulty`, `pattern`, and `solved` (including combinations)
-- Persistent review history (`ReviewSession` per completed review)
-- Aggregate stats: totals, due count, total reviews, difficulty and pattern breakdowns
-- Jakarta Bean Validation on create/update request bodies
-- Centralized JSON error handling for validation failures and missing resources
+Each confirmed session item has a dedicated Workspace with problem metadata, patterns, feedback
+and the same Coach. Official LeetCode links open in a separate tab; AlgoBloom does not reproduce
+its editor or judge, read external editor content, or run pasted code.
 
-## Tech Stack
+Hints progress through L1–L3. Full solutions require an explicit current-problem request. Concept
+questions and local debugging do not mechanically advance the hint level or mark a problem solved.
+A bounded semantic review can reject or rewrite tutoring output, but AI accuracy and spoiler
+prevention are not guaranteed. Learners can report problematic guidance.
 
-Verified from `pom.xml` (Spring Boot parent **4.1.1**):
+### Personalized learning and review
 
-| Layer | Technology |
-| --- | --- |
-| Language | Java 21 |
-| Framework | Spring Boot 4.1.1 |
-| HTTP | `spring-boot-starter-webmvc` |
-| Persistence | `spring-boot-starter-data-jpa` (Hibernate as JPA provider) |
-| Validation | `spring-boot-starter-validation` |
-| Database | PostgreSQL (`postgresql` JDBC driver, runtime) |
-| Build | Maven Wrapper (`./mvnw`) |
-| Tests | `spring-boot-starter-webmvc-test` (JUnit 5, Mockito, MockMvc) |
+Plans combine catalog IDs, available time, preferences, due reviews and recorded attempts. Learning
+evidence distinguishes independent outcomes from assistance; small samples remain “still learning”
+rather than receiving a weakness label. Editing feedback recomputes derived skills and reviews.
+Editable learning memory, bounded-date recaps and basic interview-target planning support continuity.
 
-No authentication, frontend, or message broker is included.
+### Learning Journal and Growth Timeline
+
+Each confirmed session creates one Journal, including multiple sessions on the same day or sessions
+continued across days. Journal and Workspace share the same attempt/feedback source. Notes remain
+learner-authored, searchable and editable, with browser draft recovery and version-conflict handling.
+
+The Growth Timeline links learning sessions without streak pressure, missed-day penalties or decay.
+Dates remain visible; time details are available through hover/focus or a separate mobile control.
+Retries and repeated edits do not repeatedly increment growth.
+
+## Technology
+
+- **Backend:** Java 21, Spring Boot 4.1.1, Spring MVC, Spring Security, Jakarta Validation.
+- **Persistence:** PostgreSQL; parameterized JDBC for Coach workflows; Spring Data JPA/Hibernate for
+  the existing problem catalog and compatibility features; additive Flyway migrations.
+- **AI:** Java HTTP client, OpenAI Responses API, strict tool schemas and bounded tutoring review.
+- **Frontend:** React 19, TypeScript 5.7, Vite 6, pnpm lockfile.
+- **Verification:** JUnit/Mockito/MockMvc, real PostgreSQL integration and concurrency tests,
+  frontend Node test runner, TypeScript checks and Vite production build.
 
 ## Architecture
 
-```text
-Client
-  ↓
-REST Controller
-  ↓
-Service / Business Logic
-  ↓
-Repository
-  ↓
-JPA / Hibernate
-  ↓
-PostgreSQL
-```
-
 ```mermaid
 flowchart TD
-  Client --> Controllers
-  Controllers["ProblemController / StatsController"] --> ProblemService
-  ProblemService --> ProblemRepository
-  ProblemService --> ReviewSessionRepository
-  ProblemRepository --> Hibernate
-  ReviewSessionRepository --> Hibernate
-  Hibernate --> PostgreSQL
+  UI[React application and persistent Coach shell] --> API[Spring MVC and Security]
+  API --> Services[Coaching and learning services]
+  Services --> Store[CoachStore / parameterized JDBC]
+  Services --> Catalog[Existing catalog / JPA repositories]
+  Store --> DB[(PostgreSQL)]
+  Catalog --> DB
+  Services --> Provider[Provider adapter and tutoring review]
+  Provider --> AI[OpenAI Responses API]
 ```
 
-| Layer | Responsibility |
-| --- | --- |
-| Controllers | Map HTTP routes, bind query/body parameters, apply `@Valid`, return HTTP status codes |
-| `ProblemService` | Orchestrate use cases: CRUD, filters, due queue, review + history, stats. Class-level `@Transactional` |
-| Repositories | Persistence and query methods only (derived queries and JPQL) |
-| JPA / Hibernate | Entity mapping; `spring.jpa.hibernate.ddl-auto=update` updates schema on startup |
-| PostgreSQL | Source of truth for `problems` and `review_sessions` |
+Controllers handle HTTP and delegate to services. Services enforce ownership, revision checks,
+planning rules and transactional confirmation. Database constraints enforce unique session/Journal
+creation; messages retain processing leases and request IDs for recovery. Session items and attempts
+are separate from canonical problem metadata. Existing V1 review fields/history remain intact.
 
-### Domain model
+Cookie sessions, CSRF protection and owner-scoped reads/writes protect Coach resources. The frontend
+renders untrusted text without accepting HTML. The API key stays on the backend, and logs avoid raw
+private conversation content. See [implementation and safety details](docs/CORE_MVP.md).
 
-```text
-Problem  1 ──────<  ReviewSession
-```
+## Run locally
 
-- **Problem** holds current review state: `timesReviewed`, `lastReviewed`, `nextReviewDate`, plus catalog fields (`title`, `difficulty`, `pattern`, `notes`, `solved`).
-- **ReviewSession** is a historical event: `reviewedAt`, the `nextReviewDate` computed for that review, and a many-to-one link to `Problem`. JSON exposes `problemId` and does not serialize the nested `Problem` graph.
+Prerequisites: **Java 21, PostgreSQL, Node 22/24 and pnpm**. The repository includes Maven Wrapper.
+The existing local role is `marilyn` with an empty local password; if your role differs, adjust the
+explicit local-only datasource beans described in the guide, keeping their loopback database targets.
+Never substitute a production database.
 
-`POST /problems/{id}/review` updates the problem and inserts a `ReviewSession` in the same transaction so both succeed or both roll back. Deleting a problem cascades to its sessions (`ON DELETE CASCADE`).
-
-## Review Scheduling
-
-`Problem.markReviewed()` increments `timesReviewed`, sets `lastReviewed` to `LocalDate.now()`, and sets `nextReviewDate` from the new review count:
-
-| Review # | Interval |
-| --- | --- |
-| 1 | +1 day |
-| 2 | +3 days |
-| 3 | +7 days |
-| 4 | +14 days |
-| 5+ | +30 days |
-
-A problem is **due** when `nextReviewDate <= LocalDate.now()`. `GET /problems/due` returns those rows ordered by `nextReviewDate` ascending (oldest / most overdue first). Filtering and ordering run in the database.
-
-## API
-
-Default local URL: `http://localhost:8080` (no custom `server.port` is set).
-
-| Method | Path | Description |
-| --- | --- | --- |
-| `GET` | `/hello` | Liveness-style JSON: `{ "message", "status" }` |
-| `POST` | `/problems` | Create a problem |
-| `GET` | `/problems` | List problems; optional filters |
-| `GET` | `/problems/{id}` | Get one problem |
-| `PUT` | `/problems/{id}` | Replace mutable fields from the request body |
-| `DELETE` | `/problems/{id}` | Delete; **204 No Content** on success |
-| `POST` | `/problems/{id}/review` | Apply scheduling and persist a `ReviewSession` |
-| `GET` | `/problems/{id}/reviews` | Review history, `reviewedAt` then `id` ascending |
-| `GET` | `/problems/due` | Due problems, oldest `nextReviewDate` first |
-| `GET` | `/stats` | Aggregate statistics |
-
-`GET /problems` query parameters (all optional; omitted parameters are not applied):
-
-| Parameter | Type | Notes |
-| --- | --- | --- |
-| `difficulty` | string | Exact match (`Easy`, `Medium`, or `Hard`) |
-| `pattern` | string | Exact match (URL-encode spaces, e.g. `Two%20Pointers`) |
-| `solved` | boolean | `true` / `false` |
-
-### Problem JSON
-
-Serialized fields: `id`, `title`, `difficulty`, `pattern`, `notes`, `timesReviewed`, `solved`, `lastReviewed`, `nextReviewDate`. Dates are ISO-8601 (`YYYY-MM-DD`). `solved` is a primitive `boolean` and should be sent explicitly on write.
-
-### ReviewSession JSON
-
-Serialized fields: `id`, `problemId`, `reviewedAt`, `nextReviewDate`. `reviewedAt` is a timestamp (`LocalDateTime`).
-
-### Stats JSON
-
-`totalProblems`, `solvedProblems`, `dueProblems`, `totalReviews` (sum of `timesReviewed`), `difficultyBreakdown` (always includes `Easy` / `Medium` / `Hard`), `patternBreakdown` (patterns that exist).
-
-### Examples
-
-**Create a problem**
+Create the dedicated local databases once:
 
 ```bash
-curl -s -X POST http://localhost:8080/problems \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Two Sum",
-    "difficulty": "Easy",
-    "pattern": "HashMap",
-    "notes": "Complement lookup",
-    "timesReviewed": 0,
-    "solved": true
-  }'
+createdb -h 127.0.0.1 -p 5432 leetcode_coach_dev
+createdb -h 127.0.0.1 -p 5432 leetcode_review_test
 ```
 
-Example response:
-
-```json
-{
-  "id": 1,
-  "title": "Two Sum",
-  "difficulty": "Easy",
-  "pattern": "HashMap",
-  "notes": "Complement lookup",
-  "timesReviewed": 0,
-  "solved": true,
-  "lastReviewed": null,
-  "nextReviewDate": null
-}
-```
-
-**Filter problems**
+Set `COACH_OPENAI_API_KEY` in your backend terminal without saving it in source or shell history.
+On zsh:
 
 ```bash
-curl -s "http://localhost:8080/problems?difficulty=Medium&solved=true"
-curl -s "http://localhost:8080/problems?pattern=Two%20Pointers"
+read -s 'COACH_OPENAI_API_KEY?Development API key (hidden): '
+export COACH_OPENAI_API_KEY
+printf '\n'
+bash scripts/run-local-coach.sh
 ```
 
-**Mark a problem reviewed**
+In another terminal:
 
 ```bash
-curl -s -X POST http://localhost:8080/problems/1/review
+cd frontend
+pnpm install --frozen-lockfile --ignore-scripts
+pnpm dev --port 5173
 ```
 
-The problem’s `timesReviewed`, `lastReviewed`, and `nextReviewDate` are updated. A matching history row is stored (then listed via `GET /problems/1/reviews`).
+Open **http://127.0.0.1:5173/coach**, create a local account, and ask for a short practice plan.
+The backend binds to loopback on port 8080 by default; Vite proxies `/api` to it. The `coach` profile
+uses a fixed local datasource and runs additive migrations; Hibernate validates the schema.
 
-**Due reviews**
+For a clearly labelled development demo without an AI key:
 
 ```bash
-curl -s http://localhost:8080/problems/due
+./mvnw spring-boot:run -Dspring-boot.run.arguments='--spring.profiles.active=coach --coach.demo=true'
 ```
 
-**Statistics**
+Demo replies do not count as real AI verification. Full setup, compatibility flags and acceptance
+commands are in [the local development guide](docs/CORE_MVP.md).
 
-```bash
-curl -s http://localhost:8080/stats
-```
+### Environment variables
 
-Example shape:
+- `COACH_OPENAI_API_KEY`: server-only development API key; required for real AI responses.
+- `COACH_OPENAI_MODEL`: model available to your provider account; default `gpt-4.1-mini`.
+- `PORT`: backend port, default `8080`; the local Vite proxy assumes 8080.
+- `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`: retained
+  default-profile connection settings. They intentionally cannot redirect the explicit local/test pools.
 
-```json
-{
-  "totalProblems": 100,
-  "solvedProblems": 70,
-  "dueProblems": 12,
-  "totalReviews": 250,
-  "difficultyBreakdown": {
-    "Easy": 20,
-    "Medium": 50,
-    "Hard": 30
-  },
-  "patternBreakdown": {
-    "Arrays": 20,
-    "Two Pointers": 15
-  }
-}
-```
-
-## Validation and Error Handling
-
-`@Valid` is applied to `POST /problems` and `PUT /problems/{id}` bodies.
-
-| Field | Rules |
-| --- | --- |
-| `title` | Must not be blank |
-| `difficulty` | Must not be blank; must be `Easy`, `Medium`, or `Hard` |
-| `pattern` | Must not be blank |
-| `timesReviewed` | Must be ≥ 0 |
-
-Invalid bodies return **400 Bad Request**:
-
-```json
-{
-  "status": 400,
-  "error": "Bad Request",
-  "message": "title: title must not be blank; difficulty: difficulty must be Easy, Medium, or Hard"
-}
-```
-
-(`message` concatenates field errors with `"; "`.)
-
-Missing resources throw `ProblemNotFoundException` and return **404** for `GET /problems/{id}`, `PUT /problems/{id}`, `DELETE /problems/{id}`, `POST /problems/{id}/review`, and `GET /problems/{id}/reviews`:
-
-```json
-{
-  "status": 404,
-  "error": "Not Found",
-  "message": "Problem not found: 999"
-}
-```
-
-Handled in `@RestControllerAdvice` (`RestExceptionHandler`).
-
-## Running Locally
-
-**Prerequisites:** Java 21, PostgreSQL, Maven Wrapper (included).
-
-1. Create a local database, for example:
-
-   ```sql
-   CREATE DATABASE leetcode_review;
-   ```
-
-2. Point the app at that database in `src/main/resources/application.properties`:
-
-   - `spring.datasource.url` — JDBC URL
-   - `spring.datasource.username` — database user
-   - `spring.datasource.password` — if your PostgreSQL role requires a password, set it locally (do not commit secrets)
-
-   Hibernate will create/update tables (`problems`, `review_sessions`) on startup (`ddl-auto=update`).
-
-3. Start the API:
-
-   ```bash
-   ./mvnw spring-boot:run
-   ```
-
-4. Open `http://localhost:8080` (e.g. `GET /hello` or `GET /problems`).
+[.env.example](.env.example) contains names/placeholders only. Spring does not automatically load
+`.env` files. Never use a frontend `VITE_*` variable for secrets. Demo mode is off by default.
+Production configuration and migration approval are separate from local setup.
 
 ## Testing
 
 ```bash
 ./mvnw test
+cd frontend
+pnpm test
+pnpm build
 ```
 
-The suite covers scheduling intervals, service behavior (filters, due-queue ordering, stats, review-session creation, history ordering), Bean Validation constraints, and HTTP 400/404 handling via MockMvc (`ProblemTest`, `ProblemValidationTest`, `ProblemServiceTest`, `ProblemControllerTest`, `StatsControllerTest`, plus a Spring context load test).
+`pnpm build` runs TypeScript checks before bundling. The verified MVP baseline has **133 backend
+tests** and **12 frontend tests**. Coverage includes ownership, planning/confirmation races,
+transaction rollback, shared feedback, migration compatibility, hint policy, provider contracts,
+stream recovery and existing V1 regressions. Full Spring contexts use the dedicated local test pool.
 
-## Project Evolution
+Real-provider synthetic runs and sampled desktop/mobile browser checks are recorded in
+[AC01–AC27 acceptance evidence](docs/ACCEPTANCE_1_1.md). They are not an independent security,
+accessibility or teaching-quality certification. No fabricated screenshots or metrics are included.
 
-The first version was a Java CLI that stored data in CSV. The system was rebuilt as a layered Spring Boot REST service with PostgreSQL, transactional review history, query-backed filters/stats, and consistent HTTP validation/errors.
+## Deployment status
 
-## Future Work
+**AlgoBloom’s current Coach MVP runs locally and has not been deployed.** The existing legacy V1
+backend remains at [its Railway URL](https://leetcode-review-system-production.up.railway.app),
+using Railway-hosted PostgreSQL. That endpoint does not represent a hosted AlgoBloom frontend or AI Coach.
 
-Not implemented:
+Railway’s production connection currently watches `main` on `Marilyn2004/leetcode-review-system`;
+PR deployments were disabled when inspected. A GitHub repository rename requires explicit permission,
+integration verification and a separate deployment plan. Do not point the local profile at Railway or
+assume GitHub redirects preserve deployment integrations. [Rebranding notes](docs/REBRANDING.md)
+record the retained identifiers and pending remote work.
 
-- Natural-language LeetCode coaching and structured intent extraction from user messages
-- Personalized study / review planning beyond the current interval table
-- Optional client or frontend
+## Project evolution and compatibility
 
-## V2 Catalog Foundation (local/test only)
+The project began as a Java CLI with CSV persistence, evolved into a Spring Boot/PostgreSQL review
+backend, and added a canonical catalog before the persistent AI coaching MVP. AlgoBloom is the
+current product identity; the old repository, Java package, database and migration identifiers are
+retained deliberately. Legacy private CRUD/statistics endpoints are denied by default in the new
+app and available through an explicit local compatibility flag. Their implementation and tests remain.
 
-Milestone 1 adds a 12-problem curated metadata catalog and persisted many-to-many patterns.
-Read-only APIs: `GET /catalog/problems`, `GET /catalog/problems/{id}`, and `GET /catalog/patterns`.
-The list accepts optional `difficulty` and canonical pattern-slug filters. Existing V1 APIs remain unchanged.
+Approved historical specs and attribution are preserved in [V2_SPEC.md](V2_SPEC.md),
+[Product Spec 1.1](docs/PRODUCT_SPEC_1_1.md) and [catalog provenance](docs/CATALOG.md).
 
-Catalog loading is opt-in and disabled by default. See [catalog documentation](docs/CATALOG.md) for
-source/license attribution, local loading, compatibility, and dedicated PostgreSQL test setup.
-This milestone is not deployed to Railway; production migration and rollout remain deferred.
+## Roadmap
+
+- User review of tutoring quality and the full coaching experience.
+- Production migration rehearsal, deployment configuration, monitoring and backup/recovery.
+- Later: automatic learning reports, mock interviews and optional account synchronization.
+
+These are planned work, not claims about currently deployed capabilities.

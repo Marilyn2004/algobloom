@@ -1,5 +1,9 @@
 # Actual repository audit — Product Spec 1.1
 
+> Historical implementation record, retained for reproducibility. The product is now AlgoBloom.
+> For current setup/status, see [the local guide](CORE_MVP.md) and [rebranding notes](REBRANDING.md).
+
+
 Inspected `/Users/marilyn/Desktop/leetcode-review-system`, clean `main` at `b71e92e` before changes.
 Development branch: `codex/v2-core-mvp`. No replacement project was created. No AGENTS.md was found
 in the repository/inspected parent chain. Existing uncommitted user edits were absent.

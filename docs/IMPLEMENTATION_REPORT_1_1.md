@@ -1,5 +1,9 @@
 # Core MVP implementation delivery — Product Spec 1.1
 
+> Historical implementation record, retained for reproducibility. The product is now AlgoBloom.
+> For current setup/status, see [the local guide](CORE_MVP.md) and [rebranding notes](REBRANDING.md).
+
+
 ## Status and scope
 The local learning loop is implemented and exercised with a real provider. AC01–AC27 have scoped evidence in [ACCEPTANCE_1_1.md](ACCEPTANCE_1_1.md); independent user product/AI-quality acceptance remains pending. This is not a production-readiness certification.
 

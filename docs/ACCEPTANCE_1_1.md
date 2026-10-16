@@ -1,9 +1,10 @@
-# Product Spec 1.1 — local acceptance evidence
+# AlgoBloom — Product Spec 1.1 acceptance evidence
 
 Updated October 15, 2026. This records reproducible **local** core-MVP acceptance, not production
 readiness, a security certification, or a guarantee that an LLM never makes mistakes. PASS is scoped
 to the scenarios and evidence stated below; independent user product/AI-quality sign-off is pending.
-No production database, migration, deployment or push was performed.
+The acceptance runs did not access production databases or perform production migrations/deployments.
+The verified MVP was subsequently committed and pushed to the development branch; this is not a production release.
 
 ## Verification runs
 
